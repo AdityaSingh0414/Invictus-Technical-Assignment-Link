@@ -13,5 +13,11 @@ export function formatDate(date) {
 }
 
 export function dateValue(date) {
-  return date;
+  if (!date) return 0;
+  if (date instanceof Date && !Number.isNaN(date.getTime())) return date.getTime();
+  if (typeof date === "string") {
+    const d = new Date(date);
+    return Number.isNaN(d.getTime()) ? 0 : d.getTime();
+  }
+  return 0;
 }
