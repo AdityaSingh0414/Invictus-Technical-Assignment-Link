@@ -56,3 +56,13 @@ Keep this file in the repo and **commit it** with your fixes.
 
 ---
 
+## Bug 6
+
+**How to reproduce:** Have a scenario where a debtor owes an amount that exactly equals a creditor's balance (e.g. Debtor owes $50 and Creditor is owed $50). Look at the Settle up panel.
+
+**What is wrong:** In `src/lib/settle.js`, the two-pointer loop had an empty `else` block (`i += 1; j += 1;`) when `d.amount === c.amount`, which advanced the pointers without recording the settlement transfer. This caused matching debt amounts to be dropped completely.
+
+**What I changed:** In `src/lib/settle.js`, updated the settlement loop to calculate `settled = Math.min(d.amount, c.amount)`, push the transfer record to `transfers`, subtract `settled` from both parties, and increment pointers when balances reach 0.
+
+---
+
