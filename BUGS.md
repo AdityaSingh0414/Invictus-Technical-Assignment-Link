@@ -86,3 +86,13 @@ Keep this file in the repo and **commit it** with your fixes.
 
 ---
 
+## Bug 9
+
+**How to reproduce:** Add a new member using the "Add member" form under Summary. Notice that the new member appears in the member list, but does not appear in the "Paid so far" breakdown until an expense is added or modified.
+
+**What is wrong:** In `src/components/SummaryCards.jsx`, `perPerson` was wrapped in `useMemo` with dependency array `[expenses]`, omitting `members`. When `members` changed, `perPerson` was not recomputed.
+
+**What I changed:** In `src/components/SummaryCards.jsx`, added `members` to the `useMemo` dependency array (`[members, expenses]`) and ensured type-safe ID comparison.
+
+---
+
