@@ -16,3 +16,13 @@ Keep this file in the repo and **commit it** with your fixes.
 
 ---
 
+## Bug 2
+
+**How to reproduce:** Look at the expense dates in the expense list or reload the app. Dates were either displayed as raw unformatted strings (e.g. `2026-03-12`), or when parsed as UTC `new Date("YYYY-MM-DD")`, shifted to the previous day in western timezones (e.g., March 11 instead of March 12).
+
+**What is wrong:** `formatDate` only formatted instances of `Date`, falling back to `date.slice(0, 10)` for strings. Additionally, parsing date strings via standard UTC constructor caused timezone offset shift bugs depending on the user's local timezone.
+
+**What I changed:** In `src/lib/format.js`, enhanced `formatDate` to parse both date strings and Date objects by individual year, month, and day components, formatting consistently to readable dates (e.g., `12 Mar 2026`) without timezone shifts.
+
+---
+
