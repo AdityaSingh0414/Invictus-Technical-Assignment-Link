@@ -26,3 +26,13 @@ Keep this file in the repo and **commit it** with your fixes.
 
 ---
 
+## Bug 3
+
+**How to reproduce:** Look at the seed expense "Uber to airport" ($60) paid by Diya (id: 4) split between Aisha (1) and Ben (2). Check Diya's balance in the Balances panel. Diya's credit was incorrectly reduced by $30 even though she was not part of the ride/split.
+
+**What is wrong:** In `src/lib/balances.js`, an `if (!(exp.paidBy in shares))` block erroneously subtracted `Number(exp.amount) / n` from the payer when the payer was not in `splitWith`. According to the bill splitting rules, a person who pays for others but is not on the split should receive their payment back in full without any deduction.
+
+**What I changed:** In `src/lib/balances.js`, removed the erroneous deduction block (lines 16-19). Payers are credited the full bill amount and are only debited if they are explicitly part of `shares`.
+
+---
+
