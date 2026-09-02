@@ -76,3 +76,13 @@ Keep this file in the repo and **commit it** with your fixes.
 
 ---
 
+## Bug 8
+
+**How to reproduce:** When the expense list is sorted (newest first) or filtered, click "Delete" or edit the amount on the first row (e.g., Board game). Notice that a completely different expense (e.g. Groceries) is deleted or modified instead.
+
+**What is wrong:** `ExpenseList.jsx` passed the visual array index (`index`) to `onDeleteAt(index)` and `onUpdateAt(index, patch)`. In `src/state/store.js`, the reducer executed `state.expenses.splice(action.index, 1)` and `state.expenses[action.index] = ...` against the raw unsorted state array. Additionally, using `key={index}` in `ExpenseList` caused React component state (`draft`) to persist on the wrong items.
+
+**What I changed:** In `src/state/store.js`, updated `DELETE_EXPENSE` and `UPDATE_EXPENSE` actions to find and modify expenses by their unique `id`. In `src/components/ExpenseList.jsx`, used `key={expense.id}`, passed `expense.id` to delete and update handlers, and added a `useEffect` to sync the input `draft` state when `expense.amount` changes.
+
+---
+

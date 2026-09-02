@@ -3,10 +3,15 @@ const KEY = "fairshare-v1";
 function hydrate(data) {
   return {
     groupName: data.groupName,
-    members: data.members.map((m) => ({ ...m })),
-    expenses: data.expenses.map((e) => ({
+    members: (data.members || []).map((m) => ({ ...m })),
+    expenses: (data.expenses || []).map((e) => ({
       ...e,
-      date: new Date(e.date),
+      date:
+        typeof e.date === "string"
+          ? e.date.slice(0, 10)
+          : e.date instanceof Date
+          ? e.date.toISOString().slice(0, 10)
+          : String(e.date),
     })),
   };
 }
@@ -19,7 +24,8 @@ export function loadState(seed) {
       localStorage.setItem(KEY, JSON.stringify(initial));
       return initial;
     }
-    return JSON.parse(raw);
+    const parsed = JSON.parse(raw);
+    return hydrate(parsed);
   } catch {
     return hydrate(seed);
   }
@@ -30,7 +36,7 @@ export function persistState(state) {
 }
 
 export function nextExpenseId() {
-  return `e-${Date.now()}`;
+  return `e-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
 }
 
 export function nextMemberId(members) {
@@ -44,11 +50,25 @@ export function reducer(state, action) {
       return { ...state, expenses: [...state.expenses, action.expense] };
     }
     case "DELETE_EXPENSE": {
+      if (action.id !== undefined) {
+        return {
+          ...state,
+          expenses: state.expenses.filter((e) => e.id !== action.id),
+        };
+      }
       const next = state.expenses.slice();
       next.splice(action.index, 1);
       return { ...state, expenses: next };
     }
     case "UPDATE_EXPENSE": {
+      if (action.id !== undefined) {
+        return {
+          ...state,
+          expenses: state.expenses.map((e) =>
+            e.id === action.id ? { ...e, ...action.patch } : e
+          ),
+        };
+      }
       const next = state.expenses.slice();
       next[action.index] = { ...next[action.index], ...action.patch };
       return { ...state, expenses: next };
