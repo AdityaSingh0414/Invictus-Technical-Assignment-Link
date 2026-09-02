@@ -96,3 +96,13 @@ Keep this file in the repo and **commit it** with your fixes.
 
 ---
 
+## Bug 10
+
+**How to reproduce:** Add an expense or modify data, then refresh the browser. Notice differences in date formats or date handling before and after page reload.
+
+**What is wrong:** On initial load without localStorage, `store.js` instantiated `date: new Date(e.date)`. But on refresh, `localStorage.getItem` and `JSON.parse` restored `e.date` as plain ISO strings without normalization, resulting in inconsistent data types in state across sessions.
+
+**What I changed:** In `src/state/store.js`, standardized state hydration so `loadState` always normalizes dates consistently (standard `YYYY-MM-DD` strings) for both fresh seed data and restored localStorage state. In `src/components/AddExpenseForm.jsx`, ensured submitted dates are stored in standard format and form fields reset properly upon submission.
+
+---
+
