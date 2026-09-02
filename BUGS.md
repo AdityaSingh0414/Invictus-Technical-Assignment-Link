@@ -46,3 +46,13 @@ Keep this file in the repo and **commit it** with your fixes.
 
 ---
 
+## Bug 5
+
+**How to reproduce:** Look at the Balances panel. Members who paid more than they consumed (positive balance) are displayed in red with "owes $X.XX", while members who owe money (negative balance) are displayed in green with "is owed $X.XX".
+
+**What is wrong:** The balance labels and CSS classes in `src/components/BalancesPanel.jsx` were completely inverted. A positive balance indicates credit (the group owes them), whereas a negative balance indicates debt (they owe the group).
+
+**What I changed:** In `src/components/BalancesPanel.jsx`, updated the condition so `bal > 0.005` renders `is owed ${formatMoney(bal)}` with class `owed` (green), and `bal < -0.005` renders `owes ${formatMoney(-bal)}` with class `owe` (red).
+
+---
+
