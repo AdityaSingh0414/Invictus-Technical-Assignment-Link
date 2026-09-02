@@ -36,3 +36,13 @@ Keep this file in the repo and **commit it** with your fixes.
 
 ---
 
+## Bug 4
+
+**How to reproduce:** Split $100 equally among 3 people, or create a custom percentage split for $20 with 33.33%, 33.33%, 33.34%. Observe that penny sums either lost 1 cent ($99.99 instead of $100.00) or invented 1 cent ($20.01 instead of $20.00). Also, custom percentage splits adding up to 100% could fail validation due to JavaScript floating-point precision (e.g., `33.33 + 33.33 + 33.34 = 100.00000000000001 !== 100`).
+
+**What is wrong:** `splitEqual` and `splitByPercent` used direct floating-point division and rounding per share without remainder cent allocation, violating the rule that the group should not lose or invent money in rounding. `percentsSumTo100` used strict `=== 100` equality.
+
+**What I changed:** In `src/lib/money.js`, implemented integer cent arithmetic in `splitEqual` and `splitByPercent` with remainder cent distribution so the sum of split shares always strictly equals the original total amount. Updated `percentsSumTo100` to allow standard floating-point tolerance (`Math.abs(sum - 100) < 0.01`).
+
+---
+
