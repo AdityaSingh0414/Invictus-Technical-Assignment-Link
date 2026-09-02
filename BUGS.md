@@ -66,3 +66,13 @@ Keep this file in the repo and **commit it** with your fixes.
 
 ---
 
+## Bug 7
+
+**How to reproduce:** Select any member in the "Paid by" dropdown filter at the top. The expense list immediately becomes empty and says "No expenses match these filters."
+
+**What is wrong:** In `src/App.jsx`, the filter condition checked `if (paidBy !== "" && e.paidBy !== paidBy) return false;`. `e.paidBy` is stored as a number (e.g. `1`), whereas `paidBy` from the `<select>` input is a string (e.g. `"1"`). Strict inequality `1 !== "1"` is always true in JavaScript, filtering out every item.
+
+**What I changed:** In `src/App.jsx`, changed the check to `String(e.paidBy) !== String(paidBy)` to handle type conversion reliably.
+
+---
+
